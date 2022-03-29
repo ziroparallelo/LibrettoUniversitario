@@ -17,8 +17,7 @@ public class Libretto {
 	}
 	
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return this.voti.toString();
 	}
 	
@@ -72,5 +71,7 @@ public class Libretto {
 		else
 			return false;
 	}
+	
+	
 
 }
