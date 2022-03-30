@@ -1,6 +1,7 @@
 package it.polito.tdp.LibrettoUniversitario;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.LibrettoUniversitario.model.Libretto;
@@ -8,6 +9,7 @@ import it.polito.tdp.LibrettoUniversitario.model.Voto;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -23,6 +25,9 @@ public class FXMLController {
 
     @FXML
     private ComboBox<Integer> cmbPunti;
+    
+    @FXML
+    private Label txtStatus;
 
     @FXML
     private TextField txtNome;
@@ -33,17 +38,47 @@ public class FXMLController {
     @FXML
     void handleNuovoVoto(ActionEvent event) 
     {
+    	// 1. acquisizione e controllo dati 
     	String nome = txtNome.getText();
-    	int punti = cmbPunti.getValue();
+    	Integer punti = cmbPunti.getValue();
     	//restituisce il valore attualmente 
     	//scelto dall'utente
     	
     	//controlli di validittà
+    	if(nome.equals("") || punti == null)
+    	{
+    		//errore non posso eseguire l'operazione
+    		// 1. Devo prevedere un messaggio di errore per l'utente
+    		txtStatus.setText("ERRORE: occorre inserire nome e voto\n");
+    		return ;
+    	}
     	
-    	model.add(new Voto(nome, punti));
     	
-    	String contenutoLibretto = model.toString();
-    	txtVoti.setText(contenutoLibretto);
+    	
+    	//2. esecuzione dell'operazione ( == chiedere al Model di farla)
+    	boolean ok = model.add(new Voto(nome, punti));
+    	
+    	
+    	
+    	// 3. visualizzazione/aggiornamento del risultato
+    	if(ok)
+    	{
+    	List<Voto> voti = model.getVoti();
+    	
+    	txtVoti.clear();
+    	txtVoti.appendText("Hai superato "+voti.size()+" esami\n");
+    	for(Voto v: voti)
+    		txtVoti.appendText(v.toString()+"\n");
+    	
+    	//Ripulisco per non indurre l'utente in errore
+    	txtNome.clear();
+    	cmbPunti.setValue(null);
+    	txtStatus.setText("");
+    	}
+    	else
+    	{
+    		txtStatus.setText("ERRORE: esame già presente");
+    	}
     }
     
     public void setModel(Libretto model)
